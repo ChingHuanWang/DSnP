@@ -26,11 +26,11 @@ void
 CmdParser::readCmd()
 {
    if (_dofile.is_open()) {
-	  readCmdInt(_dofile);
-	  _dofile.close();
+     readCmdInt(_dofile);
+     _dofile.close();
    }
    else
-	  readCmdInt(cin);
+     readCmdInt(cin);
 }
 
 void
@@ -39,35 +39,35 @@ CmdParser::readCmdInt(istream& istr)
    resetBufAndPrintPrompt();
 
    while (1) {
-	  ParseChar pch = getChar(istr);
-	  if (pch == INPUT_END_KEY) break;
-	  switch (pch) {
-		 case LINE_BEGIN_KEY :
-		 case HOME_KEY       : moveBufPtr(_readBuf); break;
-		 case LINE_END_KEY   :
-		 case END_KEY        : moveBufPtr(_readBufEnd); break;
-		 case BACK_SPACE_KEY : /* TODO */ moveBufPtr(_readBifptr - 1);
-		 						deleteChar();
-		 						break;
-		 case DELETE_KEY     : deleteChar(); break;
-		 case NEWLINE_KEY    : addHistory();
-							   cout << char(NEWLINE_KEY);
-							   resetBufAndPrintPrompt(); break;
-		 case ARROW_UP_KEY   : moveToHistory(_historyIdx - 1); break;
-		 case ARROW_DOWN_KEY : moveToHistory(_historyIdx + 1); break;
-		 case ARROW_RIGHT_KEY: moveBufPtr(_readBufPtr + 1) /* TODO */ break;
-		 case ARROW_LEFT_KEY : moveBufPtr(_readBufPtr - 1)/* TODO */ break;
-		 case PG_UP_KEY      : moveToHistory(_historyIdx - PG_OFFSET); break;
-		 case PG_DOWN_KEY    : moveToHistory(_historyIdx + PG_OFFSET); break;
-		 case TAB_KEY        : /* TODO */ break;
-		 case INSERT_KEY     : // not yet supported; fall through to UNDEFINE
-		 case UNDEFINED_KEY:   mybeep(); break;
-		 default:  // printable character
-			insertChar(char(pch)); break;
-	  }
-	  #ifdef TA_KB_SETTING
-	  taTestOnly();
-	  #endif
+     ParseChar pch = getChar(istr);
+     if (pch == INPUT_END_KEY) break;
+     switch (pch) {
+       case LINE_BEGIN_KEY :
+       case HOME_KEY       : moveBufPtr(_readBuf); break;
+       case LINE_END_KEY   :
+       case END_KEY        : moveBufPtr(_readBufEnd); break;
+       case BACK_SPACE_KEY : /* TODO */ moveBufPtr(_readBifptr - 1);
+                           deleteChar();
+                           break;
+       case DELETE_KEY     : deleteChar(); break;
+       case NEWLINE_KEY    : addHistory();
+                        cout << char(NEWLINE_KEY);
+                        resetBufAndPrintPrompt(); break;
+       case ARROW_UP_KEY   : moveToHistory(_historyIdx - 1); break;
+       case ARROW_DOWN_KEY : moveToHistory(_historyIdx + 1); break;
+       case ARROW_RIGHT_KEY: moveBufPtr(_readBufPtr + 1) /* TODO */ break;
+       case ARROW_LEFT_KEY : moveBufPtr(_readBufPtr - 1)/* TODO */ break;
+       case PG_UP_KEY      : moveToHistory(_historyIdx - PG_OFFSET); break;
+       case PG_DOWN_KEY    : moveToHistory(_historyIdx + PG_OFFSET); break;
+       case TAB_KEY        : /* TODO */ break;
+       case INSERT_KEY     : // not yet supported; fall through to UNDEFINE
+       case UNDEFINED_KEY:   mybeep(); break;
+       default:  // printable character
+         insertChar(char(pch)); break;
+     }
+     #ifdef TA_KB_SETTING
+     taTestOnly();
+     #endif
    }
 }
 
@@ -89,11 +89,11 @@ CmdParser::moveBufPtr(char* const ptr)
 {
    // TODO...
    if(_readBuf - ptr >= 0 || _readBufEnd - ptr <= 0){
-   		mybeep();
-   		return false;
+         mybeep();
+         return false;
    }
    else{
-   		_readBufPtr = ptr;
+         _readBufPtr = ptr;
    }
    return true;
 }
@@ -122,17 +122,17 @@ bool
 CmdParser::deleteChar()
 {
    // TODO...
-	if(_readBufPtr == _readBufEnd){
-		mybeep();
-		return false;
-	}
-	char* ptr = _readBufPtr + 1;
-	for(int i = 0 ; i < (readBufEnd -(_readBufPtr + 1)) + 1 ; ++i){
-		*(ptr - 1) = *ptr;
-		ptr++;
-	}
-	_readBufPtr--;
-	_readBufEnd--;
+   if(_readBufPtr == _readBufEnd){
+      mybeep();
+      return false;
+   }
+   char* ptr = _readBufPtr + 1;
+   for(int i = 0 ; i < (readBufEnd -(_readBufPtr + 1)) + 1 ; ++i){
+      *(ptr - 1) = *ptr;
+      ptr++;
+   }
+   _readBufPtr--;
+   _readBufEnd--;
     return true;
 }
 
@@ -159,13 +159,13 @@ CmdParser::insertChar(char ch, int repeat)
    // move the remaining string from _readBufEnd
    char* ptr = _readBufPtr;
    for(int i = 0 ; i < (_readBufEnd - _readBufPtr) + 1 ; ++i){
-   		*(ptr + repeat) = *ptr;
-   		ptr--;
+         *(ptr + repeat) = *ptr;
+         ptr--;
    }
    _readBufPtr += repeat;
    _readBufEnd += repeat;
    for(int i = 1 ; i <= repeat ; ++i){
-   		*(_readBufPtr - i) = ch;
+         *(_readBufPtr - i) = ch;
    }
 
 }
@@ -188,8 +188,8 @@ void
 CmdParser::deleteLine()
 {
    // TODO...
-	_readBufPtr = _readBufEnd = _readBuf;
-	*_readBufEnd = '\0';
+   _readBufPtr = _readBufEnd = _readBuf;
+   *_readBufEnd = '\0';
 }
 
 
@@ -208,6 +208,7 @@ CmdParser::deleteLine()
 // 2. If index >= _history.size(), let index = _history.size() - 1.
 //
 // Assign _historyIdx to index at the end.
+// i.e. _historyIdx = indexd
 //
 // [Note] index should not = _historyIdx
 //
@@ -215,6 +216,38 @@ void
 CmdParser::moveToHistory(int index)
 {
    // TODO...
+   // arrow up
+   if(index < _historyIdx){
+      if(index < 0) index = 0;
+      if(_historyIdx == 0) mybeep();
+      else if(_historyIdx > 0 || _historyIdx <= _history.size()){
+
+         // record the current without remove space if _historyIdx == _history.size()
+         if(_historyIdx == _history.size()){
+            _tempCmdStored = true;
+            _history.push_back(_readBuf);
+         }
+
+         // reset _readBuf
+         for(int i = 0 ; i < _history[index].length(); ++i){
+            _readBuf[i] = (_history[index])[i];
+         }
+         _readBuf[_history[index].length()] = '\0';
+
+         // reset _readBufPtr and _readBufEnd
+         _readBufPtr = _readBufEnd = _readBuf + _history[index].length();
+         _historyIdx = index;
+
+         cout << _history[index] << endl;
+      }
+      
+   }
+
+   // arrow down
+   else if(index > _historyIdx){
+      if(_historyIdx == _history.size())
+
+   }
 }
 
 
@@ -234,6 +267,36 @@ void
 CmdParser::addHistory()
 {
    // TODO...
+   if(*_readBuf != '\0'){
+      // prepare string to insert
+      moveBufPtr(_readBuf);
+      while(*_readBufPtr == ' ') deleteChar();
+      moveBufPtr(_readBufEnd);
+      while(*(_readBufPtr - 1) == ' ') deleteChar();
+
+      // if there is temprecord clean it
+      if(_tempCmdStored){
+         _history[_history.size() - 1] = _readBuf;
+         _tempCmdStored = false;
+         _historyIdx = _history.size();
+      }
+      // no tempstring
+      else{
+         _history.push_back(_readBuf);
+         _historyIdx = _history.size();
+      }
+   }
+   else{
+      // no string to insert
+      if(_tempCmdStored){
+         _history.pop_back();
+         _tempCmdStored = false;
+         _historyIdx = _history.size();
+      }
+   }
+   
+
+
 }
 
 
